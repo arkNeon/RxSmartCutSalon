@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Database</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: #1e1e2d;
+            color: #fff;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 60px;
+            background: #111;
+            color: white;
+            height: 100vh;
+            padding-top: 0px;
+            transition: width 0.3s;
+            position: fixed;
+        }
+
+        .sidebar.expanded {
+            width: 220px;
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu li {
+            margin: 10px 0;
+        }
+
+        .menu button {
+            width: 100%;
+            background: none;
+            border: none;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .menu button:hover {
+            background: #444;
+        }
+
+        .menu button i {
+            width: 30px;
+            text-align: center;
+        }
+
+        .menu span {
+            display: none;
+        }
+
+        .sidebar.expanded .menu span {
+            display: inline;
+        }
+        .sidebar .menu-btn {
+   
+    font-size: 20px;
+  
+}
+        /* Main content */
+        .main-content {
+            margin-left: 60px;
+            flex-grow: 1;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+
+        .sidebar.expanded ~ .main-content {
+            margin-left: 220px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #222;
+            padding: 12px 0px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .barber-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+}
+
+.barber-profile i {
+    font-size: 30px;
+    color: #dcdcdc;
+}
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #FFD700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .header-actions button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .send-btn {  margin-left: 10px;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;background: #28a745; color: white; }
+        .add-btn { background: #28a745; color: white; }
+        .report-btn { background: #007bff; color: white; }
+        .deleted-btn { background: #dd0707; color: white; }
+        .logo-container {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .logo {
+            height: 45px;
+        }
+        /* Summary Cards */
+        .container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center; /* Centers .left and .right */
+    align-items: center; /* Aligns them vertically */
+    text-align: center;
+}
+
+
+        .summary {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 28%;
+            flex-direction: column;
+        }
+
+        .right {
+            flex: 2;
+            background: #2a2a3a;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 68%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            gap: 40px;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .chart-container1 {
+            width: 20%;
+        }
+        .chart-container2 {
+            width: 70%;
+        }
+       
+#growthChart{
+    width: 100%;
+    height: 100%;
+}
+ 
+#incomeChart{
+    width: 250px;
+    height: 100%;
+}
+ 
+.card {
+    background: linear-gradient(135deg, #2a2a3a, #3a3a4a);
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    text-align: center;
+    flex: 1 1 calc(40% - 10px); /* Ensures two cards per row with spacing */
+    border-radius: 10px;
+}
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            text-align: left;
+        }
+
+        th {
+            background: #444;
+        }
+
+        .plus-btn, .equal-btn {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .plus-btn { background: #28a745; color: white; }
+        .equal-btn { background: #007bff; color: white; }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        
+        <ul class="menu">
+            <li><button id="menuToggle" ><i style="font-size: 20px;" class="fas fa-bars"></i><span style="color:#FFD700;">Mirpur Branch</span></button></li>
+         
+            <li><button onclick="toggleDarkMode()"><i class="fas fa-moon"></i><span>Dark Mode</span></button></li>
+            <li><button onclick="window.location.href='user.html'"><i class="fas fa-user-circle"></i><span>User Profile</span></button></li>
+            <li><button onclick="window.location.href='home.html'"><i class="fas fa-home"></i><span>Homepage</span></button></li>
+            <li><button onclick="window.location.href='admin.html'"><i class="fas fa-user-shield"></i><span>Admin Panel</span></button></li>
+            <li><button onclick="window.location.href='barber.html'"><i class="fas fa-cut"></i><span>Barber Dashboards</span></button></li>
+            <li><button onclick="window.location.href='daily_accounts.html'"><i class='fas fa-donate'></i><span>Daily Accounts</span></button></li>
+            <li><button onclick="window.location.href='client_database.html'"><i class="fas fa-users"></i><span>Customer Database</span></button></li>
+            <li><button onclick="window.location.href='inventory.html'"><i class="fa-solid fa-warehouse"></i><span>Inventory</span></button></li>
+            <li><button onclick="window.location.href='packages.html'"><i class="fa-solid fa-store"></i><span>Services & Packages</span></button></li>
+            <li><button onclick="window.location.href='invoices.html'"><i class="fas fa-file-invoice"></i><span>Invoices</span></button></li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <header>
+            <div class="barber-profile">
+                <div class="logo-container">
+                    <img src="logo.png" alt="Logo" class="logo">
+                </div>
+                
+                <h1>Client Database</h1>
+            </div>
+          
+            <div class="header-actions">
+                <button class="add-btn">Add</button>
+                <button class="deleted-btn">Deleted</button>
+                 
+            </div>
+        </header>
+        <div class="container">
+        <section class="summary">
+            <div class="card"><h3>Customer Repeat Rate</h3><p>39%</p></div>
+            <div class="card"><h3>Revenue Per Client (AVG) </h3><p>৳ 1,250</p></div>
+        </section>
+        
+            <div class="right">
+                <div class="chart-container1">
+                    <canvas id="incomeChart"></canvas>
+                </div>
+                <div class="chart-container2">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        
+    </div>
+        <section class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client id</th>
+                        <th>Client Name</th>
+                        <th>Total Visit</th>
+                        <th>Lifetime Revenue</th>
+                        <th>Last Visit</th>
+                        <th>Send Offer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>5</td>
+                        <td>৳ 4500</td>
+                        <td>2025-01-28</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Smith</td>
+                        <td>8</td>
+                        <td>৳ 7000</td>
+                        <td>2025-01-27</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Michael Johnson</td>
+                        <td>10</td>
+                        <td>৳ 15000</td>
+                        <td>2025-01-26</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Emily Davis</td>
+                        <td>7</td>
+                        <td>৳ 20000</td>
+                        <td>2025-01-25</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Chris Brown</td>
+                        <td>6</td>
+                        <td>৳ 4500</td>
+                        <td>2025-01-24</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Jessica Wilson</td>
+                        <td>9</td>
+                        <td>৳ 7000</td>
+                        <td>2025-01-23</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>David White</td>
+                        <td>4</td>
+                        <td>৳ 15000</td>
+                        <td>2025-01-22</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Sarah Lee</td>
+                        <td>11</td>
+                        <td>৳ 20000</td>
+                        <td>2025-01-21</td>
+                        <td><button class="send-btn">Send</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        
+    </div>
+
+    <script>
+
+const ctx = document.getElementById('incomeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Repeat Customers', 'New Customers'],
+                datasets: [{
+                    data: [38, 62], // 38% Repeat, 62% New
+                    backgroundColor: ['#36A2EB', '#CCCCCC'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                cutout: '72%', // Makes the doughnut thinner
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        const ctx2 = document.getElementById('growthChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [
+                {
+                    label: 'Unique Customers Growth (%)',
+                    data: [25, 36, 52, 83, 55, 65], 
+                    borderColor: '#CCCCCC',
+                    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                },
+                {
+                    label: 'Repeat Customer Growth (%)',
+                    data: [12, 18, 24, 30, 34, 38],
+                    borderColor: '#36A2EB',
+                    backgroundColor: 'rgba(255, 152, 0, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+        responsive: false,
+        plugins: {
+            legend: {
+                labels: { color: '#fff' }
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: '#fff' },
+                grid: { color: '#444' }
+            },
+            y: {
+                ticks: { color: '#fff' },
+                grid: { color: '#444' }
+            }
+        }
+    }
+});
+        document.getElementById("menuToggle").addEventListener("click", function() {
+            document.querySelector(".sidebar").classList.toggle("expanded");
+        });
+    </script>
+</body>
+</html>
