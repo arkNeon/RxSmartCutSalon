@@ -3,10 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barber ERP</title>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <title>RX ERP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+               @media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        overflow-x: hidden;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 0;
+        background: #111;
+    }
+
+    .menu {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .menu li {
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .menu button {
+        padding: 10px;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .menu button i {
+        font-size: 18px;
+    }
+
+    .sidebar.expanded {
+        width: 100%;
+    }
+
+    .main-content {
+        margin-left: 0;
+        margin-top: 0px;
+        padding: 5px;
+    }
+
+    .sidebar.expanded ~ .main-content {
+        margin-left: 0;
+    }
+}
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -311,6 +374,82 @@ h3 {
     width: 100%;
     height: 100%;
 }
+@media screen and (max-width: 1024px) {
+    #body-main-div {
+        flex-direction: column; /* Stack elements vertically */
+        height: auto;
+    }
+
+    #left-body-div {
+        width: 100%; /* Full width */
+    }
+
+    #right-body-div {
+        width: 100%; /* Stack below */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .barber-card {
+        max-width: 90%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .right {
+        flex-direction: column; /* Stack charts vertically */
+        gap: 20px;
+    }
+
+    .chart-container1,
+    .chart-container2 {
+        width: 100%; /* Full width charts */
+    }
+
+    #dailyincomeChart,
+    #incomeChart {
+        width: 60%;
+        max-width: 250px; /* Keep doughnut charts smaller */
+        margin: auto;
+    }
+
+    #dailygrowthChart,
+    #growthChart {
+        width: 100%;
+        height: auto;
+    }
+
+    .left-div1 {
+        padding: 15px;
+        max-width: 95%;
+    }
+
+    .barber-card {
+        max-width: 100%;
+        padding: 15px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    h3 {
+        font-size: 18px;
+    }
+
+    .barber-card h2 {
+        font-size: 16px;
+    }
+
+    .barber-card p {
+        font-size: 14px;
+    }
+
+    #dailyincomeChart,
+    #incomeChart {
+        width: 80%;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -321,7 +460,7 @@ h3 {
          
             <li><button onclick="toggleDarkMode()"><i class="fas fa-moon"></i><span>Dark Mode</span></button></li>
             <li><button onclick="window.location.href='user.html'"><i class="fas fa-user-circle"></i><span>User Profile</span></button></li>
-            <li><button onclick="window.location.href='home.html'"><i class="fas fa-home"></i><span>Homepage</span></button></li>
+            <li><button onclick="window.location.href='index.html'"><i class="fas fa-home"></i><span>Homepage</span></button></li>
             <li><button onclick="window.location.href='admin.html'"><i class="fas fa-user-shield"></i><span>Admin Panel</span></button></li>
             <li><button onclick="window.location.href='barber.html'"><i class="fas fa-cut"></i><span>Barber Dashboards</span></button></li>
             <li><button onclick="window.location.href='daily_accounts.html'"><i class='fas fa-donate'></i><span>Daily Accounts</span></button></li>
@@ -556,9 +695,56 @@ new Chart(ctx3, {
         }
     }
 });
-        document.getElementById("menuToggle").addEventListener("click", function() {
-            document.querySelector(".sidebar").classList.toggle("expanded");
-        });
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.querySelector(".sidebar");
+    const mainContent = document.querySelector(".main-content");
+    const menuToggle = document.getElementById("menuToggle");
+
+    function adjustLayout() {
+        if (window.innerWidth <= 768) {
+            // Mobile View
+            sidebar.classList.add("mobile");
+            sidebar.style.width = "100%";
+            sidebar.style.height = "auto";
+            sidebar.style.position = "relative";
+            sidebar.style.display = "flex";
+            sidebar.style.flexDirection = "row";
+            sidebar.style.overflowX = "auto";
+            sidebar.style.whiteSpace = "nowrap";
+            mainContent.style.marginLeft = "0";
+            mainContent.style.marginTop = "10px";
+        } else {
+            // Desktop View
+            sidebar.classList.remove("mobile");
+            if (!sidebar.classList.contains("expanded")) {
+                sidebar.style.width = "60px";
+                mainContent.style.marginLeft = "60px";
+            } else {
+                sidebar.style.width = "220px";
+                mainContent.style.marginLeft = "220px";
+            }
+        }
+    }
+
+    menuToggle.addEventListener("click", function () {
+        sidebar.classList.toggle("expanded");
+        if (window.innerWidth > 768) {
+            // Toggle sidebar width only on desktop
+            if (sidebar.classList.contains("expanded")) {
+                sidebar.style.width = "220px";
+                mainContent.style.marginLeft = "220px";
+            } else {
+                sidebar.style.width = "60px";
+                mainContent.style.marginLeft = "60px";
+            }
+        }
+    });
+
+    // Initial setup
+    adjustLayout();
+    window.addEventListener("resize", adjustLayout);
+});
+
 
 
         
